@@ -7,11 +7,12 @@ import "./Navbar.css";
 const Navbar = ({ user, setUser }) => {
   const socket = socketInstance.getSocket();
   const navigate = useNavigate();
+  const url ="https://video-call-server-hiq6.onrender.com"      //"http://localhost:5000"
   const handleLogout = async () => {
     try {
       // Call backend to clear the cookie
       await axios.post(
-        "http://localhost:5000/api/v1/logout",
+        `${url}/api/v1/logout`,
         {},
         { withCredentials: true },
       );

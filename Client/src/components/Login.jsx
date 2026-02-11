@@ -4,6 +4,7 @@ import "./Login.css";
 import { useNavigate } from "react-router-dom";
 
 const Login = ({ setUser, setIsAuthenticated }) => {
+  const url ="https://video-call-server-hiq6.onrender.com"       //"http://localhost:5000"
   const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "user1@gmail.com",
@@ -33,7 +34,7 @@ const Login = ({ setUser, setIsAuthenticated }) => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/api/v1/userlogin",
+        `${url}/api/v1/userlogin`,
         form,
         { withCredentials: true },
       );

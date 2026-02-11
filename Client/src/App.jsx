@@ -196,7 +196,7 @@ function App() {
 
   const socket = socketInstance.getSocket();
   const navigate = useNavigate();
-
+const url = "https://video-call-server-hiq6.onrender.com"
   // =========================
   // AUTH CHECK
   // =========================
@@ -204,7 +204,7 @@ function App() {
     const checkAuth = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:5000/api/v1/verifyUser",
+          `${url}/api/v1/verifyUser`,
           {},
           { withCredentials: true },
         );

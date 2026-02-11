@@ -7,11 +7,11 @@ import socketInstance from "../../socket";
 const Dashboard = ({ onlineIds, user }) => {
   const [allusers, setAllUsers] = useState([]);
   const socket = socketInstance.getSocket();
-
+const url ="https://video-call-server-hiq6.onrender.com"  //"http://localhost:5000"
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/v1/user", {
+        const res = await axios.get(`${url}/api/v1/user`, {
           withCredentials: true,
         });
         setAllUsers(res.data.data);

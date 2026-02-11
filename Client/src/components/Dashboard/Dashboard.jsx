@@ -4,10 +4,9 @@ import "./Dashboard.css";
 // import { useNavigate } from "react-router-dom";
 import socketInstance from "../../socket";
 
-const Dashboard = ({ onlineIds, user }) => {
+const Dashboard = ({ onlineIds, user, url }) => {
   const [allusers, setAllUsers] = useState([]);
   const socket = socketInstance.getSocket();
-const url ="https://video-call-server-hiq6.onrender.com"  //"http://localhost:5000"
   useEffect(() => {
     const fetchUsers = async () => {
       try {

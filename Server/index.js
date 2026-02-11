@@ -6,14 +6,14 @@ import cookieParser from "cookie-parser";
 import { socketHandle } from "./socketHandle.js";
 import connectDB from "./config/db.js";
 import router from "./routes/route.js";
-// Adjust the path based on your filename
 
+const origin ="https://video-call-client-37ha.onrender.com" //"http://localhost:5173"; 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin:"https://video-call-client-37ha.onrender.com", //"http://localhost:5173",
+    origin: `${origin}`,
     credentials: true,
   }),
 );
@@ -27,7 +27,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   pingTimeout: 5000, // Recommended: increased from 1000
   cors: {
-    origin:"https://video-call-client-37ha.onrender.com", //"http://localhost:5173",
+    origin: `${origin}`,
     credentials: true,
   },
 });

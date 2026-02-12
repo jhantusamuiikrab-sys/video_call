@@ -20,7 +20,7 @@ function App() {
 
   const socket = socketInstance.getSocket();
   const navigate = useNavigate();
-  const url = "https://video-call-server-hiq6.onrender.com"; //"http://localhost:5000";
+  const url = "https://video-call-server-kpp3.onrender.com"; //"http://localhost:5000";
   // =========================
   // AUTH CHECK
   // =========================

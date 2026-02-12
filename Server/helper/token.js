@@ -7,8 +7,8 @@ const generateToken = (id) => {
 const setToken = (res, token) => {
   res.cookie("videoToken", token, {
     httpOnly: true,
-    secure: false, // true in production (HTTPS)
-    sameSite: "Strict",
+    secure: true, 
+    sameSite: "None",
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 };

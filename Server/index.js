@@ -7,13 +7,13 @@ import { socketHandle } from "./socketHandle.js";
 import connectDB from "./config/db.js";
 import router from "./routes/route.js";
 
-// const origin ="https://video-call-client-37ha.onrender.com" //"http://localhost:5173"; 
+// const origin ="https://video-call-client-37ha.onrender.com" //"http://localhost:5173";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin:"https://video-call-client-hat6.onrender.com",
+    origin: "https://video-call-client-hat6.onrender.com",
     credentials: true,
   }),
 );
@@ -25,19 +25,20 @@ app.use("/api/v1", router);
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-  pingTimeout: 5000, // Recommended: increased from 1000
   cors: {
-    origin:"https://video-call-client-hat6.onrender.com",
+    origin: "https://video-call-client-37ha.onrender.com",
     credentials: true,
   },
+  pingTimeout: 25000,
 });
 
 io.on("connection", (socket) => {
-  // console.log(`User connected: ${socket.id}`);
+  console.log(`User connected: ${socket.id}`);
   socketHandle(socket, io);
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

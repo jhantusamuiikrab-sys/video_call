@@ -4,9 +4,7 @@ let socket = null;
 
 const getSocket = () => {
   if (!socket) {
-    const endpoint =
-      import.meta.env.VITE_BE_URL ||
-      "https://video-call-server-hiq6.onrender.com";
+    const endpoint ="https://video-call-server-kpp3.onrender.com";
 
     socket = io(endpoint, {
       withCredentials: true, // send cookies for auth

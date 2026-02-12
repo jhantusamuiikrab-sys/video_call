@@ -7,13 +7,13 @@ import { socketHandle } from "./socketHandle.js";
 import connectDB from "./config/db.js";
 import router from "./routes/route.js";
 
-const origin ="https://video-call-client-37ha.onrender.com" //"http://localhost:5173"; 
+// const origin ="https://video-call-client-37ha.onrender.com" //"http://localhost:5173"; 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: `${origin}`,
+    origin:"https://video-call-client-37ha.onrender.com",
     credentials: true,
   }),
 );
@@ -27,7 +27,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   pingTimeout: 5000, // Recommended: increased from 1000
   cors: {
-    origin: `${origin}`,
+    origin:"https://video-call-client-37ha.onrender.com",
     credentials: true,
   },
 });

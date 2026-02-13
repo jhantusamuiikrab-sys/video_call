@@ -1,33 +1,111 @@
 .call-container {
   position: relative;
   height: 100vh;
-  background: black;
+  width: 100%;
+  background: #000;
+  overflow: hidden;
 }
 
+/* ======================
+   Remote Video (Full)
+====================== */
 .remote {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  background: black;
 }
 
+/* ======================
+   Local Video (Preview)
+====================== */
 .local {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 220px;
-  border-radius: 12px;
+  bottom: 110px;
+  right: 24px;
+  width: 240px;
+  max-width: 30vw;
+  border-radius: 16px;
+  border: 2px solid rgba(255,255,255,0.25);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  background: #111;
+  z-index: 3;
 }
 
+/* ======================
+   Control Bar
+====================== */
 .controls {
   position: absolute;
-  bottom: 30px;
-  width: 100%;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  gap: 18px;
+  padding: 14px 22px;
+  border-radius: 999px;
+
+  background: rgba(20,20,20,0.65);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+
+  z-index: 5;
 }
 
-.controls button {
-  padding: 10px 18px;
-  border-radius: 8px;
+/* ======================
+   Buttons
+====================== */
+.ctrl-btn {
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  background: #2b2b2b;
+  color: white;
+
+  transition: all 0.2s ease;
+}
+
+.ctrl-btn:hover {
+  background: #3a3a3a;
+  transform: translateY(-1px);
+}
+
+.ctrl-btn:active {
+  transform: translateY(0);
+}
+
+/* ======================
+   End Call Button
+====================== */
+.ctrl-btn.end {
+  background: #e53935;
+}
+
+.ctrl-btn.end:hover {
+  background: #ff4d4f;
+}
+
+/* ======================
+   Mobile Responsive
+====================== */
+@media (max-width: 768px) {
+  .local {
+    width: 150px;
+    bottom: 100px;
+    right: 12px;
+  }
+
+  .controls {
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .ctrl-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
 }

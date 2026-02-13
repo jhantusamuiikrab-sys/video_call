@@ -1,5 +1,3 @@
-
-
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import socketInstance from "../../socket";
@@ -68,10 +66,10 @@ export default function VideoCall({ user }) {
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
     pc.ontrack = (e) => {
-    //   console.log(
-    //     "📡 remote tracks:",
-    //     e.streams[0].getTracks().map((t) => t.kind),
-    //   );
+      //   console.log(
+      //     "📡 remote tracks:",
+      //     e.streams[0].getTracks().map((t) => t.kind),
+      //   );
       remoteVideoRef.current.srcObject = e.streams[0];
     };
 
@@ -127,7 +125,7 @@ export default function VideoCall({ user }) {
     };
 
     const onAnswer = async (data) => {
-    //   console.log("📥 answer received");
+      //   console.log("📥 answer received");
       await pcRef.current.setRemoteDescription(data.answer);
     };
 
@@ -157,10 +155,10 @@ export default function VideoCall({ user }) {
 
   useEffect(() => {
     const onRemoteEnd = () => {
-    //   console.log("📴 Remote user ended call");
+      //   console.log("📴 Remote user ended call");
 
       cleanup();
-    //   alert("Call ended by other user");
+      //   alert("Call ended by other user");
       navigate("/dashboard");
     };
 
@@ -188,7 +186,11 @@ export default function VideoCall({ user }) {
   };
 
   const endCall = () => {
-    socket.emit("call:end", { to: peerId }); // ✅ notify other user
+    socket.emit("call:end", {
+      to: peerId,
+      from: user._id,
+      endTime: new Date().toISOString(),
+    }); // ✅ notify other user
 
     cleanup();
     navigate("/dashboard");
@@ -223,11 +225,13 @@ export default function VideoCall({ user }) {
       <video ref={localVideoRef} autoPlay muted playsInline className="local" />
 
       <div className="controls">
-        <button onClick={toggleMic}>{micOn ? "Mute" : "Unmute"}</button>
-        <button onClick={toggleCam}>
+        <button onClick={toggleMic} className="ctrl-btn">
+          {micOn ? "Mute" : "Unmute"}
+        </button>
+        <button onClick={toggleCam} className="ctrl-btn">
           {camOn ? "Camera Off" : "Camera On"}
         </button>
-        <button onClick={endCall} className="end">
+        <button onClick={endCall} className="ctrl-btn end">
           End Call
         </button>
       </div>

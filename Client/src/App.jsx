@@ -20,7 +20,7 @@
 
     const socket = socketInstance.getSocket();
     const navigate = useNavigate();
-    const url = "https://video-call-server-kpp3.onrender.com"; //"http://localhost:5000";
+    const url ="http://localhost:5000" //"https://video-call-server-kpp3.onrender.com"; //"http://localhost:5000";
     // =========================
     // AUTH CHECK
     // =========================
@@ -134,6 +134,7 @@
 
       socket.emit("call:reject", {
         to: incomingCall.from,
+        from: user._id,
       });
 
       setIncomingCall(null);

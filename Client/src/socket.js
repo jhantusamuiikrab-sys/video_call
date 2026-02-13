@@ -1,10 +1,27 @@
+// import { io } from "socket.io-client";
+// let socket;
+// const getSocket = () => {
+//   if (!socket) {
+//     const endpoint = import.meta.env.VITE_BE_URL || "http://localhost:5000"; //  "https://video-call-server-hiq6.onrender.com"; //"http://localhost:5000";
+//     socket = io(endpoint);
+//   }
+//   return socket;
+// };
+// const setSocket = () => {
+//   socket = null;
+// };
+
+// export default { getSocket, setSocket };
+
+
+
 import { io } from "socket.io-client";
 
 let socket = null;
 
 const getSocket = () => {
   if (!socket) {
-    const endpoint ="https://video-call-server-kpp3.onrender.com";
+    const endpoint ="http://localhost:5000" //"https://video-call-server-kpp3.onrender.com";
 
     socket = io(endpoint, {
       withCredentials: true, // send cookies for auth

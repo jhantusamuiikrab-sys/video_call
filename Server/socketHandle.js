@@ -1,5 +1,8 @@
-let onlineUsers = [];
 
+import { CallLog } from "./model/callLogs.js";
+
+let onlineUsers = [];
+const activeCalls = {};
 export const socketHandle = (socket, io) => {
   socket.on("join", (user) => {
     if (!user?.id || !user?.username) return;
@@ -18,10 +21,31 @@ export const socketHandle = (socket, io) => {
     io.emit("online:list", onlineUsers);
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     onlineUsers = onlineUsers.filter((u) => u.socketId !== socket.id);
 
-    // 🔥 broadcast updated list
+    // 🔥 check active call
+    const callData = activeCalls[socket.id];
+
+    if (callData) {
+      const endTime = new Date();
+      const duration = parseFloat(
+        ((endTime - callData.startTime) / (1000 * 60)).toFixed(2),
+      );
+
+      await CallLog.findByIdAndUpdate(callData.logId, {
+        callEnd: endTime,
+        totalTime: duration,
+      });
+
+      // cleanup both sockets pointing to same log
+      for (const key in activeCalls) {
+        if (activeCalls[key].logId.equals(callData.logId)) {
+          delete activeCalls[key];
+        }
+      }
+    }
+
     io.emit("online:list", onlineUsers);
   });
 
@@ -38,15 +62,51 @@ export const socketHandle = (socket, io) => {
     io.to(data.to).emit("call:incoming", data);
   });
 
-  socket.on("call:accept", (data) => {
-    io.to(data.to).emit("call:accepted", data);
+  socket.on("call:accept", async (data) => {
+    // io.to(data.to).emit("call:accepted", data);
+
+    try {
+      const newLog = await CallLog.create({
+        callerId: data.to, // ID of the person who initiated the call
+        receiverId: data.from, // ID of the person who accepted (the current user)
+        callStart: new Date(),
+        status: "completed",
+      });
+
+      // find both sockets
+      const callerSocket = onlineUsers.find((u) => u.userId == data.from);
+      const receiverSocket = onlineUsers.find((u) => u.userId == data.to);
+
+      const callInfo = {
+        logId: newLog._id,
+        startTime: new Date(),
+      };
+
+      // store for BOTH sides
+      if (callerSocket) {
+        activeCalls[callerSocket.socketId] = callInfo;
+      }
+
+      if (receiverSocket) {
+        activeCalls[receiverSocket.socketId] = callInfo;
+      }
+
+      io.to(data.to).emit("call:accepted", data);
+    } catch (err) {
+      console.error("Error creating call log:", err);
+    }
   });
 
   // socket.on("call:reject", (data) => {
   //   io.to(data.to).emit("call:rejected", data);
   // });
 
-  socket.on("call:reject", (data, ack) => {
+  socket.on("call:reject", async (data, ack) => {
+    await CallLog.create({
+      callerId: data.to,
+      receiverId: data.from,
+      status: "rejected",
+    });
     io.to(data.to).emit("call:rejected");
     ack && ack();
   });
@@ -72,7 +132,28 @@ export const socketHandle = (socket, io) => {
   //   io.to(data.to).emit("call:ended", data);
   // });
 
-  socket.on("call:end", ({ to }) => {
+  socket.on("call:end", async ({ to }) => {
+    // io.to(to).emit("call:ended");
+
+    const callData = activeCalls[socket.id];
+
+    if (callData) {
+      const endTime = new Date();
+      const duration = parseFloat(
+        ((endTime - callData.startTime) / (1000 * 60)).toFixed(2),
+      );
+      await CallLog.findByIdAndUpdate(callData.logId, {
+        callEnd: endTime,
+        totalTime: duration,
+      });
+
+      for (const key in activeCalls) {
+        if (activeCalls[key].logId.equals(callData.logId)) {
+          delete activeCalls[key];
+        }
+      }
+    }
+
     io.to(to).emit("call:ended");
   });
 };

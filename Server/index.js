@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin:"http://localhost:5173", //https://video-call-client-hat6.onrender.com",
+    origin: "https://video-call-client-hat6.onrender.com", //"http://localhost:5173", //https://video-call-client-hat6.onrender.com",
     credentials: true,
   }),
 );
@@ -25,7 +25,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin:"http://localhost:5173", //"https://video-call-client-37ha.onrender.com",
+    origin: "https://video-call-client-hat6.onrender.com", //"http://localhost:5173", //"https://video-call-client-37ha.onrender.com",
     credentials: true,
   },
   pingTimeout: 25000,

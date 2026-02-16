@@ -19,6 +19,7 @@ export default function VideoCall({ user }) {
   const remoteVideoRef = useRef(null);
   const pcRef = useRef(null);
   const localStreamRef = useRef(null);
+  const remoteStreamRef = useRef(null);
 
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
@@ -214,6 +215,39 @@ export default function VideoCall({ user }) {
 
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
   };
+
+  const handleForceDisconnect = () => {
+    // 1️⃣ Close peer connection
+    if (pcRef.current) {
+      pcRef.current.close();
+      pcRef.current = null;
+    }
+
+    // 2️⃣ Stop local stream tracks (camera + mic)
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+    }
+
+    // 3️⃣ Stop remote stream tracks
+    if (remoteStreamRef.current) {
+      remoteStreamRef.current.getTracks().forEach((track) => track.stop());
+    }
+
+    // 5️⃣ Navigate away
+    navigate("/dashboard");
+  };
+
+  useEffect(() => {
+    socket.on("call:forceEnd", () => {
+      console.log("Minutes exhausted. Auto disconnecting...");
+
+      handleForceDisconnect();
+    });
+
+    return () => {
+      socket.off("call:forceEnd");
+    };
+  }, []);
 
   // =====================
   // UI

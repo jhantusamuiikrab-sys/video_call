@@ -20,11 +20,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // profilePic: {
-    //   name: String,
-    //   contentType: String,
-    //   data: Buffer,
-    // },
+    videoCallMinutes: {
+      type: Number,
+      required: true,
+    },
+    usedCallMinutes: {
+      type: Number,
+      default: 0,
+    },
+    ManualStopFlag: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

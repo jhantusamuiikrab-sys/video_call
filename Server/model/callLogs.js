@@ -2,6 +2,16 @@ import mongoose from "mongoose";
 
 const callLogSchema = new mongoose.Schema(
   {
+    cloguserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    operationtype: {
+      type: String,
+      enum: ["Voice Call", "Video Call", "Card Recharge"],
+      default: "missed",
+    },
     callerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -25,7 +35,7 @@ const callLogSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["completed", "missed", "rejected"],
+      enum: ["completed", "missed", "rejected", "Other"],
       default: "missed",
     },
   },

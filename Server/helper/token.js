@@ -11,6 +11,12 @@ const setToken = (res, token) => {
     sameSite: "None",
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
+  // res.cookie("videoToken", token, {
+  //   httpOnly: true,
+  //   secure: false, // true in production (HTTPS)
+  //   sameSite: "Strict",
+  //   maxAge: 30 * 24 * 60 * 60 * 1000,
+  // });
 };
 
 export { generateToken, setToken };

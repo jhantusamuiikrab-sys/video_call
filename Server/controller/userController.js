@@ -3,8 +3,8 @@ import { User } from "../model/user.js";
 
 const userRegistration = async (req, res) => {
   try {
-    const { username, email, ph, password, role } = req.body;
-    if (!username || !email || !ph || !password || !role) {
+    const { username, email, ph, password, role, videoCallMinutes } = req.body;
+    if (!username || !email || !ph || !password || !role || !videoCallMinutes) {
       return res.status(400).json({ message: "all fields are required" });
     }
     const existUser = await User.findOne({
@@ -20,6 +20,7 @@ const userRegistration = async (req, res) => {
       ph,
       password,
       role,
+      videoCallMinutes
     });
     await data.save();
     return res.status(200).json({ message: "User registered successful" });
@@ -64,7 +65,8 @@ const getUser = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Please login" });
     }
-    const data = await User.find({_id: { $ne: req.user.id }, // ❌ excludes logged-in user
+    const data = await User.find({
+      _id: { $ne: req.user.id }, // ❌ excludes logged-in user
     });
     return res.status(200).json({
       message: "User's  data",

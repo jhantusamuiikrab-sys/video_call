@@ -7,6 +7,18 @@ import socketInstance from "../../socket";
 const Dashboard = ({ onlineIds, user, url }) => {
   const [allusers, setAllUsers] = useState([]);
   const socket = socketInstance.getSocket();
+  const [busyIds, setBusyIds] = useState([]);
+
+  useEffect(() => {
+    socket.on("users:busy", (busyList) => {
+      setBusyIds(busyList);
+    });
+
+    return () => {
+      socket.off("users:busy");
+    };
+  }, [socket]);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -29,6 +41,7 @@ const Dashboard = ({ onlineIds, user, url }) => {
       <div className="vc-grid">
         {allusers.map((u) => {
           const online = onlineIds.includes(u._id);
+          const busy = busyIds.includes(u._id);
 
           return (
             <div key={u._id} className="vc-card">
@@ -44,14 +57,18 @@ const Dashboard = ({ onlineIds, user, url }) => {
               </div>
 
               {/* Status */}
-              <div className={`vc-status ${online ? "online" : "offline"}`}>
-                {online ? "Online" : "Offline"}
+              <div
+                className={`vc-status ${
+                  !online ? "offline" : busy ? "busy" : "online"
+                }`}
+              >
+                {!online ? "Offline" : busy ? "Busy" : "Online"}
               </div>
 
               {/* Call Button */}
               <button
                 className="vc-call-btn"
-                disabled={!online}
+                disabled={!online || busy}
                 onClick={() => {
                   // console.log("📞 emitting call request");
                   socket.emit("call:request", {

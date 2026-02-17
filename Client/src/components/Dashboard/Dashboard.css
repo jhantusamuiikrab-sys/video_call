@@ -1,104 +1,70 @@
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
+/* ============================= */
+/* VIDEO CALL DASHBOARD */
+/* ============================= */
 
-.btn-primary {
-  background: #4facfe;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.stat-card {
-  background: rgb(82, 199, 43);
-  padding: 40px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  color: #0b0a0a;
-}
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
-
-.user-table th,
-.user-table td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-}
-
-.user-table th {
-  background: #f4f6f8;
-}
-
-.online {
-  color: green;
-  font-weight: bold;
-}
-
-.offline {
-  color: red;
-  font-weight: bold;
-}
 .vc-dashboard {
   padding: 30px;
+  background: #f9fafb;
+  min-height: 100vh;
 }
 
 .vc-title {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: 600;
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+  color: #111827;
 }
 
 .vc-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  gap: 22px;
 }
+
+/* ============================= */
+/* CARD */
+/* ============================= */
 
 .vc-card {
   background: white;
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  transition: 0.2s;
+  gap: 12px;
+  transition: all 0.25s ease;
+  position: relative;
 }
 
 .vc-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-6px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
 }
 
+/* ============================= */
+/* AVATAR */
+/* ============================= */
+
 .vc-avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  background: #4f46e5;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: bold;
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.4);
 }
+
+/* ============================= */
+/* USER INFO */
+/* ============================= */
 
 .vc-info {
   text-align: center;
@@ -106,38 +72,83 @@
 
 .vc-name {
   font-weight: 600;
+  font-size: 16px;
 }
 
 .vc-email {
   font-size: 13px;
-  color: #666;
+  color: #6b7280;
 }
+
+/* ============================= */
+/* STATUS */
+/* ============================= */
 
 .vc-status {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+/* ONLINE */
 .vc-status.online {
-  color: green;
+  background: #dcfce7;
+  color: #16a34a;
 }
 
+/* OFFLINE */
 .vc-status.offline {
-  color: red;
+  background: #fee2e2;
+  color: #dc2626;
 }
+
+/* 🔥 BUSY (Attractive Style) */
+.vc-status.busy {
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+/* Busy pulse animation */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* ============================= */
+/* CALL BUTTON */
+/* ============================= */
 
 .vc-call-btn {
-  margin-top: 8px;
-  padding: 8px 14px;
+  margin-top: 10px;
+  padding: 10px 18px;
   border: none;
-  border-radius: 8px;
-  background: #10b981;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.2s ease;
 }
 
+.vc-call-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* Disabled */
 .vc-call-btn:disabled {
-  background: #ccc;
+  background: #d1d5db;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 🔥 Special Busy Button Style */
+.vc-status.busy + .vc-call-btn {
+  background: linear-gradient(135deg, #f97316, #ef4444);
   cursor: not-allowed;
 }

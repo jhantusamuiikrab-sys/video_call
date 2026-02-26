@@ -34,6 +34,26 @@ const Dashboard = ({ onlineIds, user, url }) => {
     fetchUsers();
   }, []);
 
+  const handleRequest = (u, callType) => {
+    // 🔴 If balance is zero
+    if (!user.videoCallMinutes || user.videoCallMinutes <= 1) {
+      alert("❌ No balance left. Please recharge.");
+      return;
+    }
+
+    // 🟡 Low balance warning (example: <= 60 seconds)
+    if (user.videoCallMinutes <= 60) {
+      alert("⚠ Your balance is low. Call may disconnect soon.");
+    }
+    console.log("from dashboard handle request",callType);
+    socket.emit("call:request", {
+      to: u._id,
+      from: user._id,
+      fromName: user.username,
+      callType,
+    });
+  };
+
   return (
     <div className="vc-dashboard">
       <h2 className="vc-title">Video Call Lobby</h2>
@@ -65,21 +85,26 @@ const Dashboard = ({ onlineIds, user, url }) => {
                 {!online ? "Offline" : busy ? "Busy" : "Online"}
               </div>
 
-              {/* Call Button */}
-              <button
-                className="vc-call-btn"
-                disabled={!online || busy}
-                onClick={() => {
-                  // console.log("📞 emitting call request");
-                  socket.emit("call:request", {
-                    to: u._id,
-                    from: user._id,
-                    fromName: user.username,
-                  });
-                }}
-              >
-                📞 Call
-              </button>
+              {/*Video Call Button */}
+              <div className="vc-btn-group">
+                {/* Audio Call */}
+                <button
+                  className="vc-call-btn audio"
+                  disabled={!online || busy}
+                  onClick={() => handleRequest(u, "audio")}
+                >
+                  🎙 Audio
+                </button>
+
+                {/* Video Call */}
+                <button
+                  className="vc-call-btn video"
+                  disabled={!online || busy}
+                  onClick={() => handleRequest(u, "video")}
+                >
+                  🎥 Video
+                </button>
+              </div>
             </div>
           );
         })}

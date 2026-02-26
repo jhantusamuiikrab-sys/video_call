@@ -24,7 +24,15 @@ const userSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    usedCallMinutes: {
+    audioCallMinutes: {
+      type: Number,
+      required: true,
+    },
+    usedVideoMinutes: {
+      type: Number,
+      default: 0,
+    },
+    usedAudioMinutes: {
       type: Number,
       default: 0,
     },

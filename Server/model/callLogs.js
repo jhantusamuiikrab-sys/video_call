@@ -9,7 +9,7 @@ const callLogSchema = new mongoose.Schema(
     },
     operationtype: {
       type: String,
-      enum: ["Voice Call", "Video Call", "Card Recharge"],
+      enum: ["Audio Call", "Video Call", "Card Recharge"],
       default: "missed",
     },
     callerId: {

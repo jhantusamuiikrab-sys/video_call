@@ -50,8 +50,9 @@ export const socketHandle = (socket, io) => {
 
     io.emit("online:list", onlineUsers);
   });
+
   socket.on("call:request", async (data) => {
-    // console.log("📞 Call request received:", data);
+    // console.log("📞 Call request received: in socketHandle in server", data);
 
     try {
       const caller = await User.findById(data.to);
@@ -82,8 +83,10 @@ export const socketHandle = (socket, io) => {
     // console.log(`➡ Sending call to room/user: ${data.to}`);
     io.to(data.to).emit("call:incoming", data);
   });
+
   socket.on("call:accept", async (data) => {
     // io.to(data.to).emit("call:accepted", data);
+    // console.log("📞 Call request accept: in socketHandle in server", data);
 
     try {
       const newLog = await CallLog.create({
@@ -92,11 +95,11 @@ export const socketHandle = (socket, io) => {
         receiverId: data.from, // ID of the person who accepted (the current user)
         callStart: new Date(),
         status: "completed",
-        operationtype: "Video Call",
+        operationtype: data.callType === "audio" ? "Audio Call" : "Video Call",
       });
       callFrom = data.to;
       callTo = data.from;
-      startCallTimer(io, newLog._id, data.to, data.from);
+      startCallTimer(io, newLog._id, data.to, data.from, data.callType);
       // find both sockets
       const callerSocket = onlineUsers.find((u) => u.userId == data.from);
       const receiverSocket = onlineUsers.find((u) => u.userId == data.to);
@@ -156,9 +159,9 @@ export const socketHandle = (socket, io) => {
   //   io.to(data.to).emit("call:ended", data);
   // });
 
-  socket.on("call:end", async ({ to, from }) => {
+  socket.on("call:end", async ({ to, from, callType }) => {
     io.to(to).emit("call:ended");
-
+    console.log("upon end", callType);
     const callData = activeCalls[socket.id];
 
     if (callData) {
@@ -167,10 +170,34 @@ export const socketHandle = (socket, io) => {
       //   ((endTime - callData.startTime) / (1000 * 60)).toFixed(2),
       const duration = Math.floor((endTime - callData.startTime) / 1000);
 
-      await User.findByIdAndUpdate(callFrom, {
-        $inc: { videoCallMinutes: -duration, usedCallMinutes: duration },
-        $set: { ManualStopFlag: true },
-      });
+      // if (callData.callType === "audio") {
+      //   await User.findByIdAndUpdate(callFrom, {
+      //     $inc: { audioCallMinutes: -duration },
+      //     $set: { ManualStopFlag: true },
+      //   });
+      // } else {
+      //   await User.findByIdAndUpdate(callFrom, {
+      //     $inc: { videoCallMinutes: -duration },
+      //     $set: { ManualStopFlag: true },
+      //   });
+      // }
+      if (callType === "audio") {
+        await User.findByIdAndUpdate(callFrom, {
+          $inc: {
+            audioCallMinutes: -duration,
+            usedAudioMinutes: duration,
+          },
+          $set: { ManualStopFlag: true },
+        });
+      } else {
+        await User.findByIdAndUpdate(callFrom, {
+          $inc: {
+            videoCallMinutes: -duration,
+            usedVideoMinutes: duration,
+          },
+          $set: { ManualStopFlag: true },
+        });
+      }
       await CallLog.findByIdAndUpdate(callData.logId, {
         callEnd: endTime,
         totalTime: duration,

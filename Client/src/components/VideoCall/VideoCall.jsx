@@ -24,22 +24,44 @@ export default function VideoCall({ user }) {
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
 
+  // Low balance and zero balance reminder
+
+  // useEffect(() => {
+  //   const socket = socketInstance.getSocket();
+
+  //   socket.on("call:lowBalance", (data) => {
+  //     alert(`⚠ Low Balance! Only ${data.remaining} seconds left.`);
+  //   });
+
+  //   socket.on("call:noBalance", () => {
+  //     alert("❌ Your balance is finished!");
+  //     navigate("/dashboard"); // redirect if needed
+  //   });
+
+  //   return () => {
+  //     socket.off("call:lowBalance");
+  //     socket.off("call:noBalance");
+  //   };
+  // }, []);
+
   // =====================
   // START MEDIA + PEER
   // =====================
-
+  const callType = params.get("type") || "video";
   useEffect(() => {
     if (!user || !peerId) return; // ✅ guard
 
     const start = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: callType === "video",
           audio: true,
         });
 
         localStreamRef.current = stream;
-        localVideoRef.current.srcObject = stream;
+        if (callType === "video") {
+          localVideoRef.current.srcObject = stream;
+        }
 
         createPeer(stream);
 
@@ -67,11 +89,9 @@ export default function VideoCall({ user }) {
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
     pc.ontrack = (e) => {
-      //   console.log(
-      //     "📡 remote tracks:",
-      //     e.streams[0].getTracks().map((t) => t.kind),
-      //   );
-      remoteVideoRef.current.srcObject = e.streams[0];
+      if (callType === "video") {
+        remoteVideoRef.current.srcObject = e.streams[0];
+      }
     };
 
     pc.onicecandidate = (e) => {
@@ -114,25 +134,41 @@ export default function VideoCall({ user }) {
     const onOffer = async (data) => {
       if (!pcRef.current) return;
 
-      await pcRef.current.setRemoteDescription(data.offer);
+      try {
+        await pcRef.current.setRemoteDescription(data.offer);
 
-      const answer = await pcRef.current.createAnswer();
-      await pcRef.current.setLocalDescription(answer);
+        const answer = await pcRef.current.createAnswer();
+        await pcRef.current.setLocalDescription(answer);
 
-      socket.emit("webrtc:answer", {
-        to: data.from,
-        answer,
-      });
+        socket.emit("webrtc:answer", {
+          to: data.from,
+          answer,
+        });
+      } catch (err) {
+        console.log("Offer error:", err.message);
+      }
     };
 
     const onAnswer = async (data) => {
       //   console.log("📥 answer received");
-      await pcRef.current.setRemoteDescription(data.answer);
+      if (!pcRef.current) return;
+
+      try {
+        await pcRef.current.setRemoteDescription(data.answer);
+      } catch (err) {
+        console.log("Answer error:", err.message);
+      }
     };
 
     const onIce = async (data) => {
+      if (!pcRef.current) return; // ✅ prevent crash
+
       if (data.candidate) {
-        await pcRef.current.addIceCandidate(data.candidate);
+        try {
+          await pcRef.current.addIceCandidate(data.candidate);
+        } catch (err) {
+          console.log("ICE error after disconnect:", err.message);
+        }
       }
     };
 
@@ -180,6 +216,7 @@ export default function VideoCall({ user }) {
   };
 
   const toggleCam = () => {
+    if (callType !== "video") return;
     const track = localStreamRef.current?.getVideoTracks()[0];
     if (!track) return;
     track.enabled = !track.enabled;
@@ -191,6 +228,7 @@ export default function VideoCall({ user }) {
       to: peerId,
       from: user._id,
       endTime: new Date().toISOString(),
+      callType
     }); // ✅ notify other user
 
     cleanup();
@@ -255,16 +293,44 @@ export default function VideoCall({ user }) {
 
   return (
     <div className="call-container">
-      <video ref={remoteVideoRef} autoPlay playsInline className="remote" />
-      <video ref={localVideoRef} autoPlay muted playsInline className="local" />
+      {callType === "video" && (
+        <>
+          <video ref={remoteVideoRef} autoPlay playsInline className="remote" />
+          <video
+            ref={localVideoRef}
+            autoPlay
+            muted
+            playsInline
+            className="local"
+          />
+        </>
+      )}
+      {callType === "audio" && (
+        <div className="audio-ui">
+          <div className="audio-avatar">{peerId?.charAt(0).toUpperCase()}</div>
 
+          <div className="audio-name">Audio Call Connected</div>
+          <div className="audio-status">Live Voice Call</div>
+
+          <div className="audio-wave">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      )}
       <div className="controls">
         <button onClick={toggleMic} className="ctrl-btn">
           {micOn ? "Mute" : "Unmute"}
         </button>
-        <button onClick={toggleCam} className="ctrl-btn">
-          {camOn ? "Camera Off" : "Camera On"}
-        </button>
+
+        {callType === "video" && (
+          <button onClick={toggleCam} className="ctrl-btn">
+            {camOn ? "Camera Off" : "Camera On"}
+          </button>
+        )}
+
         <button onClick={endCall} className="ctrl-btn end">
           End Call
         </button>

@@ -19,7 +19,7 @@ let socket = null;
 
 const getSocket = () => {
   if (!socket) {
-    const endpoint = "https://video-call-server-kpp3.onrender.com"//"http://localhost:5000"; // "https://video-call-server-kpp3.onrender.com"// "http://localhost:5000"; //"https://video-call-server-kpp3.onrender.com" //"http://localhost:5000"  //"https://video-call-server-kpp3.onrender.com" //"http://localhost:5000" //"https://video-call-server-kpp3.onrender.com";
+    const endpoint = "http://localhost:5000"; // "https://video-call-server-kpp3.onrender.com"// "http://localhost:5000"; //"https://video-call-server-kpp3.onrender.com" //"http://localhost:5000"  //"https://video-call-server-kpp3.onrender.com" //"http://localhost:5000" //"https://video-call-server-kpp3.onrender.com";
 
     socket = io(endpoint, {
       withCredentials: true, // send cookies for auth

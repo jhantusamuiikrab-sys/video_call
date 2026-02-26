@@ -20,7 +20,7 @@ export default function VideoCall({ user }) {
   const pcRef = useRef(null);
   const localStreamRef = useRef(null);
   const remoteStreamRef = useRef(null);
-
+  const remoteAudioRef = useRef(null);
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
 
@@ -89,8 +89,12 @@ export default function VideoCall({ user }) {
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
     pc.ontrack = (e) => {
+      const remoteStream = e.streams[0];
+
       if (callType === "video") {
-        remoteVideoRef.current.srcObject = e.streams[0];
+        remoteVideoRef.current.srcObject = remoteStream;
+      } else {
+        remoteAudioRef.current.srcObject = remoteStream; // 🔥 audio attach
       }
     };
 
@@ -228,7 +232,7 @@ export default function VideoCall({ user }) {
       to: peerId,
       from: user._id,
       endTime: new Date().toISOString(),
-      callType
+      callType,
     }); // ✅ notify other user
 
     cleanup();
@@ -307,6 +311,8 @@ export default function VideoCall({ user }) {
       )}
       {callType === "audio" && (
         <div className="audio-ui">
+          <audio ref={remoteAudioRef} autoPlay playsInline />
+
           <div className="audio-avatar">{peerId?.charAt(0).toUpperCase()}</div>
 
           <div className="audio-name">Audio Call Connected</div>
